@@ -71,8 +71,8 @@ class DailyNews extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: REPLACE ROUTE WITH YOUR "ADD ARTICLE" PAGE
-        },
+            Navigator.pushNamed(context, '/CreateArticle');
+          },
         child: const Icon(Icons.add),
       ),
     );

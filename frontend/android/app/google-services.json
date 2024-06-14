@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "586200053978",
+    "project_id": "symmetry-takehome",
+    "storage_bucket": "symmetry-takehome.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:586200053978:android:e0f9d8bb2b1bffd2f5cde3",
+        "android_client_info": {
+          "package_name": "com.example.news_app_clean_architecture"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWiR1N9NQWDFRAxPSAYBWMRVfQjCm7S_k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
