@@ -5,18 +5,18 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:ionicons/ionicons.dart';
 import '../../../../../injection_container.dart';
 import '../../../domain/entities/article.dart';
-import '../../bloc/article/local/local_article_bloc.dart';
-import '../../bloc/article/local/local_article_event.dart';
-import '../../bloc/article/local/local_article_state.dart';
+import '../../bloc/article/remote/remote_article_bloc.dart';
+import '../../bloc/article/remote/remote_article_event.dart';
+import '../../bloc/article/remote/remote_article_state.dart';
 import '../../widgets/article_tile.dart';
 
-class SavedArticles extends HookWidget {
-  const SavedArticles({Key ? key}) : super(key: key);
+class MyArticles extends HookWidget {
+  const MyArticles({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => sl<LocalArticleBloc>()..add(const GetSavedArticles()),
+      create: (_) => sl<RemoteArticlesBloc>()..add(const GetCreatedArticles()),
       child: Scaffold(
         appBar: _buildAppBar(),
         body: _buildBody(),
@@ -33,30 +33,30 @@ class SavedArticles extends HookWidget {
           child: const Icon(Ionicons.chevron_back, color: Colors.black),
         ),
       ),
-      title: const Text('Saved Articles', style: TextStyle(color: Colors.black)),
+      title: const Text('My Articles', style: TextStyle(color: Colors.black)),
     );
   }
 
   Widget _buildBody() {
-    return BlocBuilder<LocalArticleBloc, LocalArticlesState>(
+    return BlocBuilder<RemoteArticlesBloc, RemoteArticlesState>(
       builder: (context, state) {
-        if (state is LocalArticlesLoading) {
+        if (state is RemoteArticlesLoading) {
           return const Center(child: CupertinoActivityIndicator());
-        } else if (state is LocalArticlesDone) {
+        } else if (state is RemoteArticlesDone) {
           return _buildArticlesList(state.articles!);
+        } else if (state is RemoteArticlesError) {
+          return Center(
+              child: Text(
+                  'Failed to load articles: ${state.error?.message ?? 'Unknown error'}'));
         }
-        return Container();
+        return const Center(child: Text('Something went wrong'));
       },
     );
   }
 
   Widget _buildArticlesList(List<ArticleEntity> articles) {
     if (articles.isEmpty) {
-      return const Center(
-          child: Text(
-        'No saved articles yet',
-        style: TextStyle(color: Colors.black),
-      ));
+      return const Center(child: Text('Here will be displayed your articles'));
     }
 
     return ListView.builder(
@@ -77,7 +77,7 @@ class SavedArticles extends HookWidget {
   }
 
   void _onRemoveArticle(BuildContext context, ArticleEntity article) {
-    BlocProvider.of<LocalArticleBloc>(context).add(RemoveArticle(article));
+    context.read<RemoteArticlesBloc>().add(DeleteMyArticle(article));
   }
 
   void _onArticlePressed(BuildContext context, ArticleEntity article) {

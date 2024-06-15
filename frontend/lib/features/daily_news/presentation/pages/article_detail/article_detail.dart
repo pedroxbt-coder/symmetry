@@ -102,7 +102,7 @@ class ArticleDetailsView extends HookWidget {
   Widget _buildFloatingActionButton() {
     return Builder(
       builder: (context) => FloatingActionButton(
-        onPressed: () => _onFloatingActionButtonPressed(context),
+        onPressed: () => _onSaveButtonPressed(context),
         child: const Icon(Ionicons.bookmark, color: Colors.white),
       ),
     );
@@ -112,7 +112,7 @@ class ArticleDetailsView extends HookWidget {
     Navigator.pop(context);
   }
 
-  void _onFloatingActionButtonPressed(BuildContext context) {
+  void _onSaveButtonPressed(BuildContext context) {
     BlocProvider.of<LocalArticleBloc>(context).add(SaveArticle(article!));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

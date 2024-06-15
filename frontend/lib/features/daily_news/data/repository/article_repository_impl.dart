@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/firestore.dart';
 import '../../../../core/constants/constants.dart';
 import '../../../../core/resources/data_state.dart';
 import '../../domain/entities/article.dart';
@@ -12,7 +13,9 @@ import '../models/article.dart';
 class ArticleRepositoryImpl implements ArticleRepository {
   final NewsApiService _newsApiService;
   final AppDatabase _appDatabase;
-  ArticleRepositoryImpl(this._newsApiService, this._appDatabase);
+  final FirestoreService _firestoreService;
+  ArticleRepositoryImpl(
+      this._newsApiService, this._appDatabase, this._firestoreService);
 
   @override
   Future<DataState<List<ArticleModel>>> getNewsArticles() async {
@@ -52,5 +55,20 @@ class ArticleRepositoryImpl implements ArticleRepository {
   Future<void> saveArticle(ArticleEntity article) {
     return _appDatabase.articleDAO
         .insertArticle(ArticleModel.fromEntity(article));
+  }
+//firebase methods
+  @override
+  Future<List<ArticleModel>> getCreatedArticles() {
+    return _firestoreService.getArticles();
+  }
+
+  @override
+  Future<void> deleteMyArticle(ArticleEntity article) {
+    return _firestoreService.deleteCreatedArticle(ArticleModel.fromEntity(article));
+  }
+
+  @override
+  Future<void> createArticle(ArticleEntity article) {
+    return _firestoreService.postArticle(ArticleModel.fromEntity(article));
   }
 }
