@@ -1,5 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
+import 'package:news_app_clean_architecture/features/auth/data/data_sources/remote/firebase_service.dart';
+import 'package:news_app_clean_architecture/features/auth/data/repository/user_repository_impl.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/repository/auth_repository.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/usecases/signup.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/remote/remote_auth_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/news_api_service.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/repository/article_repository_impl.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/repository/article_repository.dart';
@@ -24,6 +29,8 @@ Future<void> initializeDependencies() async {
 
   sl.registerSingleton<FirestoreService>(FirestoreService());
 
+  sl.registerSingleton<FirebaseService>(FirebaseService());
+
   sl.registerSingleton<Dio>(Dio());
 
   // Dependencies
@@ -31,6 +38,8 @@ Future<void> initializeDependencies() async {
 
   sl.registerSingleton<ArticleRepository>(
       ArticleRepositoryImpl(sl(), sl(), sl()));
+
+  sl.registerSingleton<UserRepository>(UserRepositoryImpl(sl()));
 
   //UseCases
   sl.registerSingleton<GetArticleUseCase>(GetArticleUseCase(sl()));
@@ -40,13 +49,15 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<SaveArticleUseCase>(SaveArticleUseCase(sl()));
 
   sl.registerSingleton<RemoveArticleUseCase>(RemoveArticleUseCase(sl()));
-  //FIREBASE USECASES
+  //firestore usecases
   sl.registerSingleton<CreateArticleUseCase>(CreateArticleUseCase(sl()));
-  
+
   sl.registerSingleton<GetCreatedArticleUseCase>(
       GetCreatedArticleUseCase(sl()));
 
   sl.registerSingleton<DeleteMyArticleUseCase>(DeleteMyArticleUseCase(sl()));
+  //firebase usecases
+  sl.registerSingleton<SignUpUseCase>(SignUpUseCase(sl()));
 
   //Blocs
   sl.registerFactory<RemoteArticlesBloc>(
@@ -54,4 +65,6 @@ Future<void> initializeDependencies() async {
 
   sl.registerFactory<LocalArticleBloc>(
       () => LocalArticleBloc(sl(), sl(), sl()));
+
+  sl.registerFactory<RemoteAuthBloc>(() => RemoteAuthBloc(sl()));
 }

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/create_article/create_article.dart';
 
+import '../../features/auth/presentation/pages/log_in/login.dart';
+import '../../features/auth/presentation/pages/sign_up/sign_up.dart';
 import '../../features/daily_news/domain/entities/article.dart';
 import '../../features/daily_news/presentation/pages/article_detail/article_detail.dart';
 import '../../features/daily_news/presentation/pages/home/daily_news.dart';
 import '../../features/daily_news/presentation/pages/my_articles/my_articles.dart';
 import '../../features/daily_news/presentation/pages/saved_article/saved_article.dart';
-
 
 class AppRoutes {
   static Route onGenerateRoutes(RouteSettings settings) {
@@ -15,7 +16,8 @@ class AppRoutes {
         return _materialRoute(const DailyNews());
 
       case '/ArticleDetails':
-        return _materialRoute(ArticleDetailsView(article: settings.arguments as ArticleEntity));
+        return _materialRoute(
+            ArticleDetailsView(article: settings.arguments as ArticleEntity));
 
       case '/SavedArticles':
         return _materialRoute(const SavedArticles());
@@ -23,7 +25,11 @@ class AppRoutes {
         return _materialRoute(const PostArticle());
       case '/MyArticles':
         return _materialRoute(const MyArticles());
-        
+      case '/LogIn':
+        return _materialRoute(const LogIn());
+      case '/SignUp':
+        return _materialRoute(SignUpPage());
+
       default:
         return _materialRoute(const DailyNews());
     }

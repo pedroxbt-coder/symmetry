@@ -16,18 +16,18 @@ class DailyNews extends HookWidget {
   Widget build(BuildContext context) {
     final remoteArticlesBloc = useMemoized(() => sl<RemoteArticlesBloc>());
 
+    bool user = isAuthenticated();
+
     void reFetchArticles() {
       remoteArticlesBloc.add(const GetArticles());
     }
 
     useEffect(() {
       final NavigatorState navigator = Navigator.of(context);
-
       navigator.popUntil((route) {
         reFetchArticles();
         return true;
       });
-
       return;
     }, []);
 
@@ -51,7 +51,16 @@ class DailyNews extends HookWidget {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.pushNamed(context, '/CreateArticle');
+            if (user) {
+              Navigator.pushNamed(context, '/CreateArticle');
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content:
+                      Text('You must have an account to publish articles.'),
+                ),
+              );
+            }
           },
           child: const Icon(Icons.add),
         ),
@@ -59,32 +68,55 @@ class DailyNews extends HookWidget {
     );
   }
 
+  bool isAuthenticated() {
+    return false;
+  }
+
   PreferredSizeWidget _buildAppbar(BuildContext context) {
+    bool user = isAuthenticated();
     return AppBar(
       title: const Text(
         'Daily News',
         style: TextStyle(color: Colors.black),
       ),
-      actions: [
-        GestureDetector(
-          onTap: () => _onShowSavedArticlesViewTapped(context),
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14),
-            child: Icon(Icons.bookmark, color: Colors.black),
-          ),
-        ),
-        GestureDetector(
-          onTap: () => _onShowMyArticlesViewTapped(context),
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14),
-            child: Icon(Icons.article, color: Colors.black),
-          ),
-        ),
-      ],
+      actions: user
+          ? [
+              GestureDetector(
+                onTap: () => _onShowSavedArticlesViewTapped(context),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 14),
+                  child: Icon(Icons.bookmark, color: Colors.black),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => _onShowMyArticlesViewTapped(context),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 14),
+                  child: Icon(Icons.article, color: Colors.black),
+                ),
+              ),
+            ]
+          : [
+              GestureDetector(
+                onTap: () => _onLoginTapped(context),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 14),
+                  child: Icon(Icons.login, color: Colors.black),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => _onSignupTapped(context),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 14),
+                  child: Icon(Icons.app_registration, color: Colors.black),
+                ),
+              ),
+            ],
     );
   }
 
-  Widget _buildArticlesPage(BuildContext context, List<ArticleEntity> articles) {
+  Widget _buildArticlesPage(
+      BuildContext context, List<ArticleEntity> articles) {
     return ListView(
       children: articles.map((article) {
         return ArticleWidget(
@@ -93,6 +125,14 @@ class DailyNews extends HookWidget {
         );
       }).toList(),
     );
+  }
+
+  void _onLoginTapped(BuildContext context) {
+    Navigator.pushNamed(context, '/LogIn');
+  }
+
+  void _onSignupTapped(BuildContext context) {
+    Navigator.pushNamed(context, '/SignUp');
   }
 
   void _onArticlePressed(BuildContext context, ArticleEntity article) {
@@ -104,7 +144,6 @@ class DailyNews extends HookWidget {
   }
 
   void _onShowMyArticlesViewTapped(BuildContext context) {
-    // Navigate to MyArticles page
     Navigator.pushNamed(context, '/MyArticles');
   }
 }
