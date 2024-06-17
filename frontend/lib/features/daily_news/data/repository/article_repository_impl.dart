@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/firestore.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/firestore_service.dart';
 import '../../../../core/constants/constants.dart';
 import '../../../../core/resources/data_state.dart';
 import '../../domain/entities/article.dart';

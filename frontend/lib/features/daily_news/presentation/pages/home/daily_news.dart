@@ -2,12 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/local/local_user_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_state.dart';
 import '../../../../../injection_container.dart';
+import '../../../../auth/presentation/bloc/auth/local/local_user_state.dart';
 import '../../../domain/entities/article.dart';
+import '../../widgets/app_bar_items.dart';
 import '../../widgets/article_tile.dart';
+import '../../widgets/user_name.dart';
 
 class DailyNews extends HookWidget {
   const DailyNews({Key? key}) : super(key: key);
@@ -15,8 +19,6 @@ class DailyNews extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final remoteArticlesBloc = useMemoized(() => sl<RemoteArticlesBloc>());
-
-    bool user = isAuthenticated();
 
     void reFetchArticles() {
       remoteArticlesBloc.add(const GetArticles());
@@ -30,8 +32,6 @@ class DailyNews extends HookWidget {
       });
       return;
     }, []);
-
-    remoteArticlesBloc.add(const GetArticles());
 
     return BlocProvider(
       create: (_) => remoteArticlesBloc,
@@ -49,69 +49,61 @@ class DailyNews extends HookWidget {
             return const SizedBox();
           },
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            if (user) {
-              Navigator.pushNamed(context, '/CreateArticle');
+        floatingActionButton: BlocBuilder<LocalUserBloc, LocalUserState>(
+          builder: (context, state) {
+            if (state is LocalUserDone && state.user.email != null) {
+              return FloatingActionButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/CreateArticle');
+                },
+                child: const Icon(Icons.add),
+              );
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content:
-                      Text('You must have an account to publish articles.'),
-                ),
+              return FloatingActionButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content:
+                          Text('You must have an account to publish articles.'),
+                    ),
+                  );
+                },
+                child: const Icon(Icons.add),
               );
             }
           },
-          child: const Icon(Icons.add),
         ),
       ),
     );
   }
 
   bool isAuthenticated() {
-    return false;
+    return false; //mocked user
   }
 
   PreferredSizeWidget _buildAppbar(BuildContext context) {
-    bool user = isAuthenticated();
     return AppBar(
-      title: const Text(
-        'Daily News',
-        style: TextStyle(color: Colors.black),
+      title: const Row(
+        children: [
+          UserNameWidget(),
+          SizedBox(width: 10),
+          Text(
+            'Daily News',
+            style: TextStyle(color: Colors.black),
+          ),
+        ],
       ),
-      actions: user
-          ? [
-              GestureDetector(
-                onTap: () => _onShowSavedArticlesViewTapped(context),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Icon(Icons.bookmark, color: Colors.black),
-                ),
-              ),
-              GestureDetector(
-                onTap: () => _onShowMyArticlesViewTapped(context),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Icon(Icons.article, color: Colors.black),
-                ),
-              ),
-            ]
-          : [
-              GestureDetector(
-                onTap: () => _onLoginTapped(context),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Icon(Icons.login, color: Colors.black),
-                ),
-              ),
-              GestureDetector(
-                onTap: () => _onSignupTapped(context),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14),
-                  child: Icon(Icons.app_registration, color: Colors.black),
-                ),
-              ),
-            ],
+      actions: [
+        BlocBuilder<LocalUserBloc, LocalUserState>(
+          builder: (context, state) {
+            if (state is LocalUserDone && state.user.email != null) {
+              return AppBarItems(user: true, context: context);
+            } else {
+              return AppBarItems(user: false, context: context);
+            }
+          },
+        ),
+      ],
     );
   }
 
@@ -127,23 +119,7 @@ class DailyNews extends HookWidget {
     );
   }
 
-  void _onLoginTapped(BuildContext context) {
-    Navigator.pushNamed(context, '/LogIn');
-  }
-
-  void _onSignupTapped(BuildContext context) {
-    Navigator.pushNamed(context, '/SignUp');
-  }
-
   void _onArticlePressed(BuildContext context, ArticleEntity article) {
     Navigator.pushNamed(context, '/ArticleDetails', arguments: article);
-  }
-
-  void _onShowSavedArticlesViewTapped(BuildContext context) {
-    Navigator.pushNamed(context, '/SavedArticles');
-  }
-
-  void _onShowMyArticlesViewTapped(BuildContext context) {
-    Navigator.pushNamed(context, '/MyArticles');
   }
 }

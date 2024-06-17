@@ -27,7 +27,7 @@ class FirestoreService {
         .map((doc) {
       final data = doc.data() as Map<String, dynamic>;
       return ArticleModel.fromMap({
-        'id': doc.id, // Assign Firestore document ID as id
+        'id': doc.id,
         ...data,
       });
     }).toList();

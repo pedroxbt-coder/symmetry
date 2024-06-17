@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:news_app_clean_architecture/config/routes/routes.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/local/local_user_bloc.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/local/local_user_event.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/remote/remote_auth_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/home/daily_news.dart';
@@ -15,7 +17,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await initializeDependencies();
-  await dotenv.load(fileName:'.env');
+  await dotenv.load(fileName: '.env');
   runApp(const MyApp());
 }
 
@@ -27,7 +29,11 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<RemoteArticlesBloc>(
-          create: (context) => sl<RemoteArticlesBloc>()..add(const GetArticles()),
+          create: (context) =>
+              sl<RemoteArticlesBloc>()..add(const GetArticles()),
+        ),
+        BlocProvider<LocalUserBloc>(
+          create: (context) => sl<LocalUserBloc>()..add(GetUser()),
         ),
         BlocProvider<RemoteAuthBloc>(
           create: (context) => sl<RemoteAuthBloc>(),

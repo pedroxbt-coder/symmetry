@@ -1,9 +1,12 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
+import 'package:news_app_clean_architecture/features/auth/data/data_sources/local/local_firebase_service.dart';
 import 'package:news_app_clean_architecture/features/auth/data/data_sources/remote/firebase_service.dart';
 import 'package:news_app_clean_architecture/features/auth/data/repository/user_repository_impl.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/repository/auth_repository.dart';
-import 'package:news_app_clean_architecture/features/auth/domain/usecases/signup.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/usecases/get_user.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_up.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/local/local_user_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/remote/remote_auth_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/data_sources/remote/news_api_service.dart';
 import 'package:news_app_clean_architecture/features/daily_news/data/repository/article_repository_impl.dart';
@@ -14,7 +17,7 @@ import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/
 import 'package:news_app_clean_architecture/features/daily_news/domain/usecases/get_created_articles.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
 import 'features/daily_news/data/data_sources/local/app_database.dart';
-import 'features/daily_news/data/data_sources/remote/firestore.dart';
+import 'features/daily_news/data/data_sources/remote/firestore_service.dart';
 import 'features/daily_news/domain/usecases/get_saved_article.dart';
 import 'features/daily_news/domain/usecases/remove_article.dart';
 import 'features/daily_news/domain/usecases/save_article.dart';
@@ -30,6 +33,8 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<FirestoreService>(FirestoreService());
 
   sl.registerSingleton<FirebaseService>(FirebaseService());
+  sl.registerSingleton<LocalFirebaseService>(LocalFirebaseService());
+  
 
   sl.registerSingleton<Dio>(Dio());
 
@@ -39,7 +44,7 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<ArticleRepository>(
       ArticleRepositoryImpl(sl(), sl(), sl()));
 
-  sl.registerSingleton<UserRepository>(UserRepositoryImpl(sl()));
+  sl.registerSingleton<UserRepository>(UserRepositoryImpl(sl(), sl()));
 
   //UseCases
   sl.registerSingleton<GetArticleUseCase>(GetArticleUseCase(sl()));
@@ -59,6 +64,8 @@ Future<void> initializeDependencies() async {
   //firebase usecases
   sl.registerSingleton<SignUpUseCase>(SignUpUseCase(sl()));
 
+  sl.registerSingleton<GetUserUseCase>(GetUserUseCase(sl()));
+
   //Blocs
   sl.registerFactory<RemoteArticlesBloc>(
       () => RemoteArticlesBloc(sl(), sl(), sl(), sl()));
@@ -67,4 +74,6 @@ Future<void> initializeDependencies() async {
       () => LocalArticleBloc(sl(), sl(), sl()));
 
   sl.registerFactory<RemoteAuthBloc>(() => RemoteAuthBloc(sl()));
+
+  sl.registerFactory<LocalUserBloc>(() => LocalUserBloc(sl()));
 }

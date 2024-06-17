@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../sign_up/sign_up.dart';
 
-class LogIn extends StatelessWidget {
-  const LogIn({Key? key}) : super(key: key);
+class LogInPage extends StatelessWidget {
+  const LogInPage({Key? key}) : super(key: key);
 
   void logIn(BuildContext context) async {}
 

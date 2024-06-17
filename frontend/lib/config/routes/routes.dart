@@ -26,7 +26,7 @@ class AppRoutes {
       case '/MyArticles':
         return _materialRoute(const MyArticles());
       case '/LogIn':
-        return _materialRoute(const LogIn());
+        return _materialRoute(const LogInPage());
       case '/SignUp':
         return _materialRoute(SignUpPage());
 
