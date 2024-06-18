@@ -5,6 +5,8 @@ import 'package:news_app_clean_architecture/features/auth/data/data_sources/remo
 import 'package:news_app_clean_architecture/features/auth/data/repository/user_repository_impl.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/repository/auth_repository.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/get_user.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_in.dart';
+import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_out.dart';
 import 'package:news_app_clean_architecture/features/auth/domain/usecases/sign_up.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/local/local_user_bloc.dart';
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/remote/remote_auth_bloc.dart';
@@ -34,7 +36,6 @@ Future<void> initializeDependencies() async {
 
   sl.registerSingleton<FirebaseService>(FirebaseService());
   sl.registerSingleton<LocalFirebaseService>(LocalFirebaseService());
-  
 
   sl.registerSingleton<Dio>(Dio());
 
@@ -54,6 +55,7 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<SaveArticleUseCase>(SaveArticleUseCase(sl()));
 
   sl.registerSingleton<RemoveArticleUseCase>(RemoveArticleUseCase(sl()));
+
   //firestore usecases
   sl.registerSingleton<CreateArticleUseCase>(CreateArticleUseCase(sl()));
 
@@ -63,8 +65,10 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<DeleteMyArticleUseCase>(DeleteMyArticleUseCase(sl()));
   //firebase usecases
   sl.registerSingleton<SignUpUseCase>(SignUpUseCase(sl()));
-
+  
   sl.registerSingleton<GetUserUseCase>(GetUserUseCase(sl()));
+  sl.registerSingleton<SignOutUseCase>(SignOutUseCase(sl()));
+  sl.registerSingleton<SignInUseCase>(SignInUseCase());
 
   //Blocs
   sl.registerFactory<RemoteArticlesBloc>(
@@ -75,5 +79,5 @@ Future<void> initializeDependencies() async {
 
   sl.registerFactory<RemoteAuthBloc>(() => RemoteAuthBloc(sl()));
 
-  sl.registerFactory<LocalUserBloc>(() => LocalUserBloc(sl()));
+  sl.registerFactory<LocalUserBloc>(() => LocalUserBloc(sl(), sl(), sl()));
 }

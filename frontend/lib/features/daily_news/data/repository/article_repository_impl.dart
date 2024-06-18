@@ -56,7 +56,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
     return _appDatabase.articleDAO
         .insertArticle(ArticleModel.fromEntity(article));
   }
-//firebase methods
+
   @override
   Future<List<ArticleModel>> getCreatedArticles() {
     return _firestoreService.getArticles();

@@ -1,12 +1,40 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/local/local_user_bloc.dart';
+// import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/local/local_user_event.dart';
 
+// import '../../../../daily_news/presentation/pages/home/daily_news.dart';
+// import '../../../domain/entities/user_entity.dart';
 import '../sign_up/sign_up.dart';
 
-class LogInPage extends StatelessWidget {
-  const LogInPage({Key? key}) : super(key: key);
+class SignInPage extends StatelessWidget {
+  SignInPage({super.key});
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  void logIn(BuildContext context) async {}
+void signIn(BuildContext context) async {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('The sign-in function could not be implemented.'),
+    ),
+  );
+
+  // String email = _emailController.text.trim();
+  // var userEntity = SignUpParamsEntity(
+  //     email: email, password: _passwordController.toString());
+  // context.read<LocalUserBloc>().add(SignIn(userEntity));
+  //
+  // _emailController.clear();
+  // _passwordController.clear();
+  //
+  // Navigator.pushAndRemoveUntil(
+  //   context,
+  //   MaterialPageRoute(builder: (context) => const DailyNews()),
+  //   (route) => false,
+  // );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +98,6 @@ class LogInPage extends StatelessWidget {
   }
 
   Widget _emailAddress() {
-    final TextEditingController _emailController = TextEditingController();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,7 +114,7 @@ class LogInPage extends StatelessWidget {
           controller: _emailController,
           decoration: InputDecoration(
               filled: true,
-              hintText: 'mahdiforwork@gmail.com',
+              hintText: 'example@gmail.com',
               hintStyle: const TextStyle(
                   color: Color(0xff6A6A6A),
                   fontWeight: FontWeight.normal,
@@ -102,8 +129,6 @@ class LogInPage extends StatelessWidget {
   }
 
   Widget _password() {
-    final TextEditingController _passwordController = TextEditingController();
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,7 +166,7 @@ class LogInPage extends StatelessWidget {
         elevation: 0,
       ),
       onPressed: () async {
-        logIn(context); // Call the login method here
+        signIn(context);
       },
       child: const Text("Sign In"),
     );

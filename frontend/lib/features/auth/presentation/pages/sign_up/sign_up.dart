@@ -5,33 +5,48 @@ import 'package:news_app_clean_architecture/features/auth/domain/entities/user_e
 import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/remote/remote_auth_bloc.dart';
 
 import '../../../../daily_news/presentation/pages/home/daily_news.dart';
+import '../../bloc/auth/local/local_user_bloc.dart';
+import '../../bloc/auth/local/local_user_event.dart';
 import '../../bloc/auth/remote/remote_auth_event.dart';
-import '../log_in/login.dart';
+import '../../bloc/auth/remote/remote_auth_state.dart';
+import '../sign_in/sign_in.dart';
 
 class SignUpPage extends StatelessWidget {
   SignUpPage({super.key});
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
 
-  void signUp(BuildContext context) async {
-    String email = _emailController.text.trim();
+void signUp(BuildContext context) async {
+  var userEntity = SignUpParamsEntity(
+    email: _emailController.text,
+    password: _passwordController.text,
+    name: _nameController.text
+  );
 
-    var userEntity = SignUpParamsEntity(
-        email: email, password: _passwordController.toString());
-    context.read<RemoteAuthBloc>().add(SignUp(userEntity));
+  context.read<RemoteAuthBloc>().add(SignUp(userEntity));
+
+  final state = await context.read<RemoteAuthBloc>().stream.firstWhere(
+      (state) => state is RemoteAuthDone || state is RemoteAuthError);
+
+  if (state is RemoteAuthDone) {
+    context.read<LocalUserBloc>().add(const GetUser());
 
     _emailController.clear();
     _passwordController.clear();
 
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(
-          builder: (context) =>
-              const DailyNews()),
+      MaterialPageRoute(builder: (context) => const DailyNews()),
       (route) => false,
     );
+  } else if (state is RemoteAuthError) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Sign up failed: ${state.firebaseException?.message}')),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +76,10 @@ class SignUpPage extends StatelessWidget {
                 const SizedBox(
                   height: 80,
                 ),
+                _username(),
+                const SizedBox(
+                  height: 20,
+                ),
                 _emailAddress(),
                 const SizedBox(
                   height: 20,
@@ -74,6 +93,36 @@ class SignUpPage extends StatelessWidget {
             ),
           ),
         ));
+  }
+
+  Widget _username() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Name',
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.normal, fontSize: 16),
+        ),
+        const SizedBox(
+          height: 16,
+        ),
+        TextField(
+          controller: _nameController,
+          decoration: InputDecoration(
+              filled: true,
+              hintStyle: const TextStyle(
+                  color: Color(0xff6A6A6A),
+                  fontWeight: FontWeight.normal,
+                  fontSize: 14),
+              fillColor: const Color(0xffF7F7F9),
+              border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(14))),
+        )
+      ],
+    );
   }
 
   Widget _emailAddress() {
@@ -93,7 +142,6 @@ class SignUpPage extends StatelessWidget {
           controller: _emailController,
           decoration: InputDecoration(
               filled: true,
-              hintText: 'mahdiforwork@gmail.com',
               hintStyle: const TextStyle(
                   color: Color(0xff6A6A6A),
                   fontWeight: FontWeight.normal,
@@ -174,7 +222,7 @@ class SignUpPage extends StatelessWidget {
                   ..onTap = () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const LogInPage()),
+                      MaterialPageRoute(builder: (context) => SignInPage()),
                     );
                   }),
           ])),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app_clean_architecture/features/auth/presentation/bloc/auth/local/local_user_event.dart';
 import '../../../auth/presentation/bloc/auth/local/local_user_bloc.dart';
 import '../../../auth/presentation/bloc/auth/local/local_user_state.dart';
 
@@ -13,9 +14,16 @@ class UserNameWidget extends StatelessWidget {
         if (state is LocalUserDone) {
           return GestureDetector(
             onTap: () => _showLogoutDialog(context),
-            child: Text(
-              '${state.user.email}!',
-              style: const TextStyle(color: Colors.black),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '${state.user.name}',
+                style: const TextStyle(color: Colors.black),
+              ),
             ),
           );
         } else {
@@ -30,19 +38,34 @@ class UserNameWidget extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Log Out'),
-          content: const Text('Are you sure you want to log out?'),
+          title: const Text('Settings'),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(), // Close the dialog
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                // BlocProvider.of<LocalUserBloc>(context).add(LogoutEvent());
-                Navigator.of(context).pop();
-              },
-              child: const Text('Log Out'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Feature not implemented yet'),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.brightness_2),
+                ),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        BlocProvider.of<LocalUserBloc>(context)
+                            .add(const SignOut());
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Log Out'),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         );

@@ -18,7 +18,7 @@ class FirestoreService {
   }
 
   Future<void> deleteCreatedArticle(ArticleModel article) async {
-    return articles.doc(article.id.toString()).delete();
+    // return articles.doc(article.id).delete(); Fix datatype mismatch: firebase returns string
   }
 
   Future<List<ArticleModel>> getArticles() async {

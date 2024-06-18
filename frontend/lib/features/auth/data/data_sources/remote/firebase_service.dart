@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../models/user_model.dart';
 
@@ -11,12 +12,15 @@ class FirebaseService {
   Future<UserModel> signUpWithEmailAndPassword({
     required String email,
     required String password,
+    required String name,
   }) async {
     firebase_auth.UserCredential credential =
         await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
+
+    await FirebaseAuth.instance.currentUser?.updateDisplayName(name);
 
     if (credential.user == null) {
       throw Exception('Sign up failed: The user is null after sign up.');

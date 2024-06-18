@@ -20,11 +20,23 @@ class UserEntity extends Equatable {
 }
 
 class SignUpParamsEntity {
+  final String name;
   final String email;
   final String password;
 
   SignUpParamsEntity({
+    required this.name,
     required this.email,
     required this.password,
   });
 }
+
+// class SignInParamsEntity {
+//   final String email;
+//   final String password;
+
+//   SignInParamsEntity({
+//     required this.email,
+//     required this.password,
+//   });
+// }

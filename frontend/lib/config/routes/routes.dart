@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/create_article/create_article.dart';
 
-import '../../features/auth/presentation/pages/log_in/login.dart';
+import '../../features/auth/presentation/pages/sign_in/sign_in.dart';
 import '../../features/auth/presentation/pages/sign_up/sign_up.dart';
 import '../../features/daily_news/domain/entities/article.dart';
 import '../../features/daily_news/presentation/pages/article_detail/article_detail.dart';
@@ -26,7 +26,7 @@ class AppRoutes {
       case '/MyArticles':
         return _materialRoute(const MyArticles());
       case '/LogIn':
-        return _materialRoute(const LogInPage());
+        return _materialRoute(SignInPage());
       case '/SignUp':
         return _materialRoute(SignUpPage());
 

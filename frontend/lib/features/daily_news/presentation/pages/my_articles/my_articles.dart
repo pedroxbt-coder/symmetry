@@ -77,7 +77,13 @@ class MyArticles extends HookWidget {
   }
 
   void _onRemoveArticle(BuildContext context, ArticleEntity article) {
-    context.read<RemoteArticlesBloc>().add(DeleteMyArticle(article));
+    // context.read<RemoteArticlesBloc>().add(DeleteMyArticle(article));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        backgroundColor: Colors.black,
+        content: Text("Can't delete your article now"),
+      ),
+    );
   }
 
   void _onArticlePressed(BuildContext context, ArticleEntity article) {

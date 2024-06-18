@@ -14,7 +14,7 @@ class SignUpUseCase implements UseCase<UserEntity, SignUpParamsEntity> {
     }
     UserEntity userEntity = await _userRepository.signUp(
       email: params.email,
-      password: params.password,
+      password: params.password, name: params.name,
     );
     return userEntity;
   }

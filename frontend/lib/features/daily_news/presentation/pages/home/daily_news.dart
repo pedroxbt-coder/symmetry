@@ -35,50 +35,53 @@ class DailyNews extends HookWidget {
 
     return BlocProvider(
       create: (_) => remoteArticlesBloc,
-      child: Scaffold(
-        appBar: _buildAppbar(context),
-        body: BlocBuilder<RemoteArticlesBloc, RemoteArticlesState>(
-          builder: (context, state) {
-            if (state is RemoteArticlesLoading) {
-              return const Center(child: CupertinoActivityIndicator());
-            } else if (state is RemoteArticlesError) {
-              return const Center(child: Icon(Icons.refresh));
-            } else if (state is RemoteArticlesDone) {
-              return _buildArticlesPage(context, state.articles!);
-            }
-            return const SizedBox();
-          },
-        ),
-        floatingActionButton: BlocBuilder<LocalUserBloc, LocalUserState>(
-          builder: (context, state) {
-            if (state is LocalUserDone && state.user.email != null) {
-              return FloatingActionButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/CreateArticle');
-                },
-                child: const Icon(Icons.add),
-              );
-            } else {
-              return FloatingActionButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content:
-                          Text('You must have an account to publish articles.'),
-                    ),
-                  );
-                },
-                child: const Icon(Icons.add),
-              );
-            }
-          },
+      child: BlocListener<LocalUserBloc, LocalUserState>(
+        listener: (context, state) {
+          if (state is LocalUserDone) {
+            reFetchArticles();
+          }
+        },
+        child: Scaffold(
+          appBar: _buildAppbar(context),
+          body: BlocBuilder<RemoteArticlesBloc, RemoteArticlesState>(
+            builder: (context, state) {
+              if (state is RemoteArticlesLoading) {
+                return const Center(child: CupertinoActivityIndicator());
+              } else if (state is RemoteArticlesError) {
+                return const Center(child: Icon(Icons.refresh));
+              } else if (state is RemoteArticlesDone) {
+                return _buildArticlesPage(context, state.articles!);
+              }
+              return const SizedBox();
+            },
+          ),
+          floatingActionButton: BlocBuilder<LocalUserBloc, LocalUserState>(
+            builder: (context, state) {
+              if (state is LocalUserDone && state.user.email != null) {
+                return FloatingActionButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/CreateArticle');
+                  },
+                  child: const Icon(Icons.add),
+                );
+              } else {
+                return FloatingActionButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                            'You must be authenticated to publish an article.'),
+                      ),
+                    );
+                  },
+                  child: const Icon(Icons.add),
+                );
+              }
+            },
+          ),
         ),
       ),
     );
-  }
-
-  bool isAuthenticated() {
-    return false; //mocked user
   }
 
   PreferredSizeWidget _buildAppbar(BuildContext context) {
