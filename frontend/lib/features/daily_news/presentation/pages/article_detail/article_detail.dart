@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:ionicons/ionicons.dart';
 import '../../../../../injection_container.dart';
+import '../../../../auth/presentation/bloc/auth/local/local_user_bloc.dart';
+import '../../../../auth/presentation/bloc/auth/local/local_user_state.dart';
 import '../../../domain/entities/article.dart';
 import '../../bloc/article/local/local_article_bloc.dart';
 import '../../bloc/article/local/local_article_event.dart';
@@ -19,7 +21,7 @@ class ArticleDetailsView extends HookWidget {
       child: Scaffold(
         appBar: _buildAppBar(),
         body: _buildBody(),
-        floatingActionButton: _buildFloatingActionButton(),
+        floatingActionButton: _buildFloatingActionButton(context),
       ),
     );
   }
@@ -99,14 +101,22 @@ class ArticleDetailsView extends HookWidget {
     );
   }
 
-  Widget _buildFloatingActionButton() {
-    return Builder(
-      builder: (context) => FloatingActionButton(
-        onPressed: () => _onSaveButtonPressed(context),
-        child: const Icon(Ionicons.bookmark, color: Colors.white),
-      ),
-    );
-  }
+Widget _buildFloatingActionButton(BuildContext context) {
+  return BlocBuilder<LocalUserBloc, LocalUserState>(
+    builder: (context, state) {
+      if (state is LocalUserDone && state.user.email != null) {
+        return FloatingActionButton(
+          onPressed: () => _onSaveButtonPressed(context),
+          child: const Icon(Ionicons.bookmark, color: Colors.white),
+        );
+      } else {
+        // Return an empty container or null when there is no user to hide the button
+        return Container(); // or return null;
+      }
+    },
+  );
+}
+
 
   void _onBackButtonTapped(BuildContext context) {
     Navigator.pop(context);
